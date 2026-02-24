@@ -76,7 +76,7 @@ NODE_RED_AUTH_PASSWORD=your-password
 
 ### Basic Auth with Authentik
 
-A common setup is Node-RED behind [Authentik](https://goauthentik.io/) as a forward auth proxy. Authentik intercepts requests, validates credentials, and sets session cookies before forwarding to Node-RED.
+If your Node-RED instance sits behind [Authentik](https://goauthentik.io/) as a forward auth proxy, the basic auth method works well. Authentik intercepts requests, validates credentials, and sets session cookies before forwarding to Node-RED.
 
 1. **Create an Authentik application** for your Node-RED instance using the Forward Auth (single application) provider.
 
@@ -105,11 +105,13 @@ The basic auth credentials are sent to Authentik's proxy, which validates them a
 
 Fetches a short-lived JWT via OAuth2 client credentials grant. The token is cached and auto-refreshed with a 30-second expiry buffer. On a 401 response, the server retries once with a fresh token.
 
+Works with Authentik out of the box — every application has a token endpoint and `client_id`:
+
 ```bash
 NODE_RED_AUTH_METHOD=oauth
 NODE_RED_AUTH_USERNAME=service-account
 NODE_RED_AUTH_PASSWORD=service-password
-NODE_RED_OAUTH_TOKEN_URL=https://auth.example.com/application/o/token/
+NODE_RED_OAUTH_TOKEN_URL=https://auth.yourdomain.com/application/o/token/
 NODE_RED_OAUTH_CLIENT_ID=your-client-id
 ```
 
