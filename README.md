@@ -52,6 +52,9 @@ All configuration is via environment variables with the `NODE_RED_` prefix.
 | `NODE_RED_AUTH_PASSWORD` | `""` | Password/app password for `basic` or `oauth` auth |
 | `NODE_RED_OAUTH_TOKEN_URL` | `""` | OAuth2 token endpoint URL |
 | `NODE_RED_OAUTH_CLIENT_ID` | `""` | OAuth2 client ID |
+| `NODE_RED_MCP_TRANSPORT` | `stdio` | MCP transport: `stdio` for local clients, `http` for sidecars/containers |
+| `NODE_RED_MCP_HOST` | `127.0.0.1` | Host to bind when `NODE_RED_MCP_TRANSPORT=http` |
+| `NODE_RED_MCP_PORT` | `8000` | Port to bind when `NODE_RED_MCP_TRANSPORT=http` |
 
 ## Authentication
 
@@ -114,6 +117,43 @@ NODE_RED_AUTH_PASSWORD=service-password
 NODE_RED_OAUTH_TOKEN_URL=https://auth.yourdomain.com/application/o/token/
 NODE_RED_OAUTH_CLIENT_ID=your-client-id
 ```
+
+## Docker / HTTP deployment
+
+The default `nodered-mcp` command uses stdio, which is ideal for desktop MCP clients. For a
+container sidecar or reverse-proxy deployment, set `NODE_RED_MCP_TRANSPORT=http`.
+
+```bash
+docker build -t nodered-mcp .
+docker run --rm -p 8000:8000 \
+  -e NODE_RED_URL=http://host.docker.internal:1880 \
+  -e NODE_RED_TOKEN=your-api-token \
+  -e NODE_RED_MCP_TRANSPORT=http \
+  -e NODE_RED_MCP_HOST=0.0.0.0 \
+  -e NODE_RED_MCP_PORT=8000 \
+  nodered-mcp
+```
+
+Docker Compose sidecar example:
+
+```yaml
+services:
+  node-red:
+    image: nodered/node-red:latest
+
+  nodered-mcp:
+    build: .
+    environment:
+      NODE_RED_URL: http://node-red:1880
+      NODE_RED_TOKEN: ${NODE_RED_TOKEN}
+      NODE_RED_MCP_TRANSPORT: http
+      NODE_RED_MCP_HOST: 0.0.0.0
+      NODE_RED_MCP_PORT: 8000
+    ports:
+      - "8000:8000"
+```
+
+The HTTP endpoint is exposed at `/mcp`.
 
 ## MCP Client Configuration
 

@@ -1,5 +1,7 @@
 """Configuration management for Node-RED MCP."""
 
+from typing import Literal
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -24,6 +26,12 @@ class Config(BaseSettings):
     oauth_token_url: str = ""
     # For oauth: client ID
     oauth_client_id: str = ""
+
+    # MCP server transport. Use "stdio" for local MCP clients or "http" for
+    # container/sidecar deployments.
+    mcp_transport: Literal["stdio", "http"] = "stdio"
+    mcp_host: str = "127.0.0.1"
+    mcp_port: int = 8000
 
     model_config = SettingsConfigDict(
         env_prefix="NODE_RED_",

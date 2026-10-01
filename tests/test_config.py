@@ -118,6 +118,23 @@ class TestAuthConfig:
         assert cfg.oauth_token_url == ""
         assert cfg.oauth_client_id == ""
 
+    def test_mcp_transport_defaults(self) -> None:
+        """MCP server defaults to stdio for local MCP clients."""
+        cfg = Config(_env_file=None)
+        assert cfg.mcp_transport == "stdio"
+        assert cfg.mcp_host == "127.0.0.1"
+        assert cfg.mcp_port == 8000
+
+    def test_mcp_transport_http(self, monkeypatch) -> None:
+        """MCP server can be configured for HTTP sidecar deployments."""
+        monkeypatch.setenv("NODE_RED_MCP_TRANSPORT", "http")
+        monkeypatch.setenv("NODE_RED_MCP_HOST", "0.0.0.0")
+        monkeypatch.setenv("NODE_RED_MCP_PORT", "9000")
+        cfg = Config(_env_file=None)
+        assert cfg.mcp_transport == "http"
+        assert cfg.mcp_host == "0.0.0.0"
+        assert cfg.mcp_port == 9000
+
     def test_auth_method_basic(self, monkeypatch) -> None:
         monkeypatch.setenv("NODE_RED_AUTH_METHOD", "basic")
         monkeypatch.setenv("NODE_RED_AUTH_USERNAME", "admin")

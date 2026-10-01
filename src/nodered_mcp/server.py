@@ -36,7 +36,15 @@ from nodered_mcp.tools import layout  # noqa: F401, E402
 
 def main():
     """Run the MCP server."""
-    mcp.run()
+    if config.mcp_transport == "stdio":
+        mcp.run()
+        return
+
+    mcp.run(
+        transport=config.mcp_transport,
+        host=config.mcp_host,
+        port=config.mcp_port,
+    )
 
 
 if __name__ == "__main__":
